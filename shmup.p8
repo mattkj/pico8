@@ -18,6 +18,13 @@ function _init()
  lives = 2
  bombs = 2
  bombsize = 0
+ 
+ starsx={}
+ starsy={}
+ for i=1,50 do
+ 	add(starsx,flr(rnd(128)))
+ 	add(starsy,flr(rnd(128)))
+ end
 end
 
 function _update()
@@ -63,7 +70,7 @@ function _update()
  bull_y = bull_y + bull_spd
  
  muzzle = muzzle - 1
- bombsize -= 50
+ bombsize -= 25
  
  flamespr += 1
  bullspr += 1
@@ -96,6 +103,7 @@ end
 
 function _draw()
  cls(0)
+ starfield()
  
  spr(shipspr,xpos,ypos) -- ship
  spr(bullspr,bull_x,bull_y) -- bullet
@@ -107,7 +115,8 @@ function _draw()
  end
  
  if bombsize > 0 then
-  circfill(64,64,bombsize,7)
+  --circfill(64,64,bombsize,7)
+  rectfill(0,0,128,bombsize,rnd(15))
  end
  
  print("score: "..score,40,1,12)
@@ -130,6 +139,12 @@ function _draw()
   end
  end
  
+end
+-->8
+function starfield()
+	for i=1,count(starsx) do
+	 pset(starsx[i],starsy[i],7)
+	end
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
