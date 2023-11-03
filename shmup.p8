@@ -21,9 +21,11 @@ function _init()
  
  starsx={}
  starsy={}
- for i=1,50 do
+ starspd={}
+ for i=1,100 do
  	add(starsx,flr(rnd(128)))
  	add(starsy,flr(rnd(128)))
+ 	add(starspd,rnd(1.5)+.5)
  end
 end
 
@@ -61,7 +63,7 @@ function _update()
   if bombs > 0 then
    bombs -= 1
    sfx(1)
-   bombsize = 128
+   bombsize = 200
   end
  end
  
@@ -99,6 +101,7 @@ function _update()
   ypos = 0
  end
 
+	animatestars()
 end
 
 function _draw()
@@ -143,8 +146,35 @@ end
 -->8
 function starfield()
 	for i=1,count(starsx) do
-	 pset(starsx[i],starsy[i],7)
+	 local starclr=13
+	 
+	 if starspd[i] < 1 then
+	  starclr=2
+	 elseif starspd[i] > 1.95 then
+	  starclr=9
+	 elseif starspd[i] > 1.5 then
+	  starclr=6
+	 end
+	 
+	 if starspd[i] > 1.95 then
+	  line(starsx[i],starsy[i],starsx[i],starsy[i]+2,starclr)
+	  else
+	   pset(starsx[i],starsy[i],starclr)	
+	  end
 	end
+end
+
+function animatestars()
+ for i=1,count(starsy) do
+  local sy = starsy[i]
+ 	sy += starspd[i]
+ 	
+ 	if sy > 128 then
+   sy -= 128
+  end
+  
+  starsy[i] = sy
+ end
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
