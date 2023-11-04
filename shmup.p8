@@ -7,10 +7,14 @@ function _init()
  ypos = 110
  speed_x = 0
  speed_y = 0
- bull_x = 0
- bull_y = -8
- bull_spd = -4
+ 
+ --bull_x = 0
+ --bull_y = -8
+ bulletspd = -4
+ bulletsx={}
+ bulletsy={}
  bullspr = 3
+ 
  shipspr = 17
  flamespr = 19
  muzzle = 0
@@ -53,8 +57,10 @@ function _update()
  end
  
  if btnp(4) then
-  bull_x = xpos
-  bull_y = ypos - 4
+ 	add(bulletsx,xpos)
+ 	add(bulletsy,ypos-4)
+  --bull_x = xpos
+  --bull_y = ypos - 4
   sfx(0)
   muzzle = 3
  end
@@ -69,7 +75,7 @@ function _update()
  
  xpos = xpos + speed_x
  ypos = ypos + speed_y
- bull_y = bull_y + bull_spd
+-- bull_y = bull_y + buletspd
  
  muzzle = muzzle - 1
  bombsize -= 25
@@ -102,14 +108,19 @@ function _update()
  end
 
 	animatestars()
+	animatebullets()
+	
 end
 
 function _draw()
  cls(0)
  starfield()
  
+ print(count(bulletsx),0,110)
+ print(count(bulletsy),0,120)
+ 
  spr(shipspr,xpos,ypos) -- ship
- spr(bullspr,bull_x,bull_y) -- bullet
+-- spr(bullspr,bull_x,bull_y) -- bullet
  spr(flamespr,xpos,ypos+5) -- flame
  
  if muzzle > 0 then 
@@ -141,6 +152,8 @@ function _draw()
    spr(15,i*7+106,1)
   end
  end
+ 
+ drawbullets()
  
 end
 -->8
@@ -176,6 +189,26 @@ function animatestars()
   starsy[i] = sy
  end
 end
+-->8
+function drawbullets()
+	for i=1,count(bulletsx) do
+	 spr(bullspr,bulletsx[i],bulletsy[i])
+	 
+	end
+end
+
+function animatebullets()
+ for i=1,count(bulletsy) do
+  bulletsy[i] += bulletspd
+ end
+end
+
+--[[ clear bullets
+  if bulletsy[i] < 0 then
+   deli(bulletsx,i)
+   deli(bulletsy,i)
+  end
+]]--
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
 0000000000000000000000000000000000077000000aa000000000000000000000000000700000700000000000000000888888881001100100dddd0000100100
