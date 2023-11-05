@@ -3,7 +3,31 @@ version 41
 __lua__
 function _init()
  cls(0)
- xpos = 60
+ mode="start"
+end
+
+function _update()
+ if mode=="game" then
+  update_game()
+ elseif mode=="start" then
+  update_start()
+ elseif mode=="over" then
+  update_over()
+ end
+end
+
+function _draw()
+ if mode=="game" then
+  draw_game()
+ elseif mode=="start" then
+  draw_start()
+ elseif mode=="over" then
+  draw_over()
+ end
+end
+
+function startgame()
+	xpos = 60
  ypos = 110
  speed_x = 0
  speed_y = 0
@@ -31,131 +55,10 @@ function _init()
  	add(starsy,flr(rnd(128)))
  	add(starspd,rnd(1.5)+.5)
  end
+ 
+ mode="game"
 end
 
-function _update()
- speed_x = 0
- speed_y = 0
- shipspr = 17
- 
- if btn(0) then
- 	speed_x = -2
- 	shipspr = 16
- end
- 
- if btn(1) then
-  speed_x = 2
-  shipspr = 18
- end
- 
- if btn(2) then
-  speed_y = -2
- end
- 
- if btn(3) then
-  speed_y = 2
- end
- 
- if btnp(4) then
- 	add(bulletsx,xpos)
- 	add(bulletsy,ypos-4)
-  --bull_x = xpos
-  --bull_y = ypos - 4
-  sfx(0)
-  muzzle = 3
- end
- 
- if btnp(5) then
-  if bombs > 0 then
-   bombs -= 1
-   sfx(1)
-   bombsize = 200
-  end
- end
- 
- xpos = xpos + speed_x
- ypos = ypos + speed_y
--- bull_y = bull_y + buletspd
- 
- muzzle = muzzle - 1
- bombsize -= 25
- 
- flamespr += 1
- bullspr += 1
- 
- if flamespr > 22 then
-  flamespr = 19
- end 
- 
- if bullspr > 6 then
-  bullspr = 3
- end
- 
- if xpos > 120 then
- 	xpos = -0
- end
- 
- if xpos < -0 then
-  xpos = 120
- end
- 
- if ypos < 0 then
-  ypos = 120
- end
- 
- if ypos > 120 then
-  ypos = 0
- end
-
-	animatestars()
-	animatebullets()
-	
-end
-
-function _draw()
- cls(0)
- starfield()
- 
- print(count(bulletsx),0,110)
- print(count(bulletsy),0,120)
- 
- spr(shipspr,xpos,ypos) -- ship
--- spr(bullspr,bull_x,bull_y) -- bullet
- spr(flamespr,xpos,ypos+5) -- flame
- 
- if muzzle > 0 then 
-  circfill(xpos+3,ypos-2,muzzle,7)
-  circfill(xpos+4,ypos-2,muzzle,7)
- end
- 
- if bombsize > 0 then
-  --circfill(64,64,bombsize,7)
-  rectfill(0,0,128,bombsize,rnd(15))
- end
- 
- print("score: "..score,40,1,12)
- 
- --draw lives
- for i=1,3 do
- 	if i <= lives then
-   spr(12,i*9-8,1)
-  else
-   spr(13,i*9-8,1)
-  end
- end
- 
- --draw bombs
- for i=1,2 do
- 	if i <= bombs then
-   spr(14,i*7+106,1)
-  else
-   spr(15,i*7+106,1)
-  end
- end
- 
- drawbullets()
- 
-end
 -->8
 function starfield()
 	for i=1,count(starsx) do
@@ -209,6 +112,158 @@ end
    deli(bulletsy,i)
   end
 ]]--
+-->8
+function update_game()
+ speed_x = 0
+ speed_y = 0
+ shipspr = 17
+ 
+ if btn(0) then
+ 	speed_x = -2
+ 	shipspr = 16
+ end
+ 
+ if btn(1) then
+  speed_x = 2
+  shipspr = 18
+ end
+ 
+ if btn(2) then
+  speed_y = -2
+ end
+ 
+ if btn(3) then
+  speed_y = 2
+ end
+ 
+ if btnp(4) then
+ 	add(bulletsx,xpos)
+ 	add(bulletsy,ypos-4)
+  --bull_x = xpos
+  --bull_y = ypos - 4
+  sfx(0)
+  muzzle = 3
+ end
+ 
+ if btnp(5) then
+  if bombs > 0 then
+   bombs -= 1
+   sfx(1)
+   bombsize = 200
+  end
+ end
+ 
+ if btnp(4) and btnp(5) then
+  mode="over"
+ end
+ 
+ xpos = xpos + speed_x
+ ypos = ypos + speed_y
+-- bull_y = bull_y + buletspd
+ 
+ muzzle = muzzle - 1
+ bombsize -= 25
+ 
+ flamespr += 1
+ bullspr += 1
+ 
+ if flamespr > 22 then
+  flamespr = 19
+ end 
+ 
+ if bullspr > 6 then
+  bullspr = 3
+ end
+ 
+ if xpos > 120 then
+ 	xpos = -0
+ end
+ 
+ if xpos < -0 then
+  xpos = 120
+ end
+ 
+ if ypos < 0 then
+  ypos = 120
+ end
+ 
+ if ypos > 120 then
+  ypos = 0
+ end
+
+	animatestars()
+	animatebullets()
+	
+end
+
+function update_start()
+ if btnp(4) or btnp(5) then
+ 	startgame()
+ end
+end
+
+function update_over()
+ if btnp(4) or btnp(5) then
+ 	mode="start"
+ end
+end
+-->8
+function draw_game()
+ cls(0)
+ starfield()
+ 
+ print(count(bulletsx),0,110)
+ print(count(bulletsy),0,120)
+ 
+ spr(shipspr,xpos,ypos) -- ship
+-- spr(bullspr,bull_x,bull_y) -- bullet
+ spr(flamespr,xpos,ypos+5) -- flame
+ 
+ if muzzle > 0 then 
+  circfill(xpos+3,ypos-2,muzzle,7)
+  circfill(xpos+4,ypos-2,muzzle,7)
+ end
+ 
+ if bombsize > 0 then
+  --circfill(64,64,bombsize,7)
+  rectfill(0,0,128,bombsize,rnd(15))
+ end
+ 
+ print("score: "..score,40,1,12)
+ 
+ --draw lives
+ for i=1,3 do
+ 	if i <= lives then
+   spr(12,i*9-8,1)
+  else
+   spr(13,i*9-8,1)
+  end
+ end
+ 
+ --draw bombs
+ for i=1,2 do
+ 	if i <= bombs then
+   spr(14,i*7+106,1)
+  else
+   spr(15,i*7+106,1)
+  end
+ end
+ 
+ drawbullets()
+ 
+end
+
+function draw_start()
+ cls(2)
+ print("shmup hero",42,40,12)
+ print("press any button to start",15,80,7)
+end
+
+function draw_over()
+ cls(8)
+ print("game over",42,40,12)
+ print("press any button to continue",10,80,7)
+end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
 0000000000000000000000000000000000077000000aa000000000000000000000000000700000700000000000000000888888881001100100dddd0000100100
