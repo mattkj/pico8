@@ -4,9 +4,12 @@ __lua__
 function _init()
  cls(0)
  mode="start"
+ blinkt=1
 end
 
 function _update()
+ blinkt +=1
+
  if mode=="game" then
   update_game()
  elseif mode=="start" then
@@ -91,6 +94,14 @@ function animatestars()
   
   starsy[i] = sy
  end
+end
+
+function blink()
+	local colors={13,13,13,13,13,13,13,13,13,13,13,13,14,14,15,15}
+	if blinkt > #colors then
+		blinkt = 1
+	end
+	return colors[blinkt]
 end
 -->8
 function drawbullets()
@@ -256,13 +267,13 @@ end
 function draw_start()
  cls(2)
  print("shmup hero",42,40,12)
- print("press any button to start",15,80,7)
+ print("press any button to start",15,80,blink())
 end
 
 function draw_over()
  cls(8)
  print("game over",42,40,12)
- print("press any button to continue",10,80,7)
+ print("press any button to continue",10,80,blink())
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
