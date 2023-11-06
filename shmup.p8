@@ -7,14 +7,16 @@ function _init()
  blinkt=1
  countdownt=90
  
- starsx={}
- starsy={}
- starspd={}
+ stars={}
+ 
  for i=1,100 do
- 	add(starsx,flr(rnd(128)))
- 	add(starsy,flr(rnd(128)))
- 	add(starspd,rnd(1.5)+.5)
+  local star={}
+ 	star.x=flr(rnd(128))
+ 	star.y=flr(rnd(128))
+ 	star.spd=rnd(1.5)+.5
+ 	add(stars,star)
  end
+ 
 end
 
 function _update()
@@ -70,42 +72,39 @@ function startgame()
  bombs = 2
  bombsize = 0
  
- 
- 
  mode="game"
 end
 
 -->8
 function starfield()
-	for i=1,count(starsx) do
+	for i=1,#stars do
+	 local star=stars[i]
 	 local starclr=13
 	 
-	 if starspd[i] < 1 then
+	 if star.spd < 1 then
 	  starclr=2
-	 elseif starspd[i] > 1.95 then
+	 elseif star.spd > 1.95 then
 	  starclr=9
-	 elseif starspd[i] > 1.5 then
+	 elseif star.spd > 1.5 then
 	  starclr=6
 	 end
 	 
-	 if starspd[i] > 1.95 then
-	  line(starsx[i],starsy[i],starsx[i],starsy[i]+2,starclr)
+	 if star.spd > 1.95 then
+	  line(star.x,star.y,star.x,star.y+2,starclr)
 	  else
-	   pset(starsx[i],starsy[i],starclr)	
+	   pset(star.x,star.y,starclr)	
 	  end
 	end
 end
 
 function animatestars()
- for i=1,count(starsy) do
-  local sy = starsy[i]
- 	sy += starspd[i]
+ for i=1,#stars do
+  local star = stars[i]
+ 	star.y += star.spd
  	
- 	if sy > 128 then
-   sy -= 128
+ 	if star.y > 128 then
+   star.y -= 128
   end
-  
-  starsy[i] = sy
  end
 end
 
