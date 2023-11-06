@@ -5,15 +5,28 @@ function _init()
  cls(0)
  mode="start"
  blinkt=1
+ countdownt=90
+ 
+ starsx={}
+ starsy={}
+ starspd={}
+ for i=1,100 do
+ 	add(starsx,flr(rnd(128)))
+ 	add(starsy,flr(rnd(128)))
+ 	add(starspd,rnd(1.5)+.5)
+ end
 end
 
 function _update()
  blinkt +=1
+ countdownt -=1
 
  if mode=="game" then
   update_game()
  elseif mode=="start" then
   update_start()
+ elseif mode=="level" then
+  update_level()
  elseif mode=="over" then
   update_over()
  end
@@ -24,9 +37,16 @@ function _draw()
   draw_game()
  elseif mode=="start" then
   draw_start()
+ elseif mode=="level" then
+  draw_level()
  elseif mode=="over" then
   draw_over()
  end
+end
+
+function startlevel()
+	countdownt=90
+	mode="level"
 end
 
 function startgame()
@@ -50,14 +70,7 @@ function startgame()
  bombs = 2
  bombsize = 0
  
- starsx={}
- starsy={}
- starspd={}
- for i=1,100 do
- 	add(starsx,flr(rnd(128)))
- 	add(starsy,flr(rnd(128)))
- 	add(starspd,rnd(1.5)+.5)
- end
+ 
  
  mode="game"
 end
@@ -102,6 +115,16 @@ function blink()
 		blinkt = 1
 	end
 	return colors[blinkt]
+end
+
+function countdown()
+	if countdownt>60 then
+	 return 3
+	elseif countdownt>30 then
+	 return 2
+	else 
+	 return 1
+	end
 end
 -->8
 function drawbullets()
@@ -208,12 +231,24 @@ function update_game()
 end
 
 function update_start()
+ animatestars()
+ 
  if btnp(4) or btnp(5) then
+ 	startlevel()
+ end
+end
+
+function update_level()
+ animatestars()
+ 
+ if countdownt==0 then
  	startgame()
  end
 end
 
 function update_over()
+ animatestars()
+
  if btnp(4) or btnp(5) then
  	mode="start"
  end
@@ -266,12 +301,24 @@ end
 
 function draw_start()
  cls(2)
+ starfield()
+ 
  print("shmup hero",42,40,12)
  print("press any button to start",15,80,blink())
 end
 
+function draw_level()
+ cls(0)
+ starfield()
+ 
+ print("level 1",50,40,7)
+ print(countdown(),64,70,7)
+end
+
 function draw_over()
  cls(8)
+ starfield()
+ 
  print("game over",42,40,12)
  print("press any button to continue",10,80,blink())
 end
