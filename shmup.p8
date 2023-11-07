@@ -57,12 +57,9 @@ function startgame()
  speed_x = 0
  speed_y = 0
  
- --bull_x = 0
- --bull_y = -8
  bulletspd = -4
- bulletsx={}
- bulletsy={}
  bullspr = 3
+ bullets={}
  
  shipspr = 17
  flamespr = 19
@@ -127,24 +124,23 @@ function countdown()
 end
 -->8
 function drawbullets()
-	for i=1,count(bulletsx) do
-	 spr(bullspr,bulletsx[i],bulletsy[i])
-	 
+	for i=1,#bullets do
+	 local bullet=bullets[i]
+	 spr(bullspr,bullet.x,bullet.y)
 	end
 end
 
 function animatebullets()
- for i=1,count(bulletsy) do
-  bulletsy[i] += bulletspd
+ for i=#bullets,1,-1 do
+  local bullet=bullets[i]
+  bullet.y += bulletspd
+
+  --clear bullets
+  if bullet.y < -8 then
+   deli(bullets,i)
+  end
  end
 end
-
---[[ clear bullets
-  if bulletsy[i] < 0 then
-   deli(bulletsx,i)
-   deli(bulletsy,i)
-  end
-]]--
 -->8
 function update_game()
  speed_x = 0
@@ -170,10 +166,11 @@ function update_game()
  end
  
  if btnp(4) then
- 	add(bulletsx,xpos)
- 	add(bulletsy,ypos-4)
-  --bull_x = xpos
-  --bull_y = ypos - 4
+  local bullet={}
+  bullet.x=xpos
+  bullet.y=ypos-4
+  add(bullets,bullet)
+
   sfx(0)
   muzzle = 3
  end
@@ -257,8 +254,7 @@ function draw_game()
  cls(0)
  starfield()
  
- print(count(bulletsx),0,110)
- print(count(bulletsy),0,120)
+ print(#bullets,0,110)
  
  spr(shipspr,xpos,ypos) -- ship
 -- spr(bullspr,bull_x,bull_y) -- bullet
