@@ -60,6 +60,7 @@ function startgame()
  ship.xspd = 0
  ship.yspd = 0
  ship.spr = 17
+ ship.inv = false
  
  bulletspd = -4
  bullets={}
@@ -274,16 +275,21 @@ function update_game()
 	
 	-- collision ship x enemies
 	for e in all(enemies) do
-		if col(e, ship) then
+		if ship.inv!=true and col(e, ship) then
 		 lives -= 1
 			sfx(2)
-			del(enemies,e)
+			ship.inv=true
 		end
 	end
 	
 	if lives<=0 then
 	 mode="over"
 	 return
+	end
+	
+	if ship.inv==true then
+		--do something then
+		--ship.inv=false
 	end
 
 	animatestars()
