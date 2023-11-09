@@ -67,7 +67,7 @@ function startgame()
  flamespr = 19
  muzzle = 0
  score = 10000
- lives = 2
+ lives = 3
  bombs = 2
  bombsize = 0
  
@@ -89,14 +89,6 @@ function startgame()
   add(enemies,enemy)
  end
  
- 
- --[[
- todo
- - add multiple enemies
- - add different enemies
- - add enemy.spd
- - move some on diagonal
- ]]--
 end
 
 -->8
@@ -148,6 +140,25 @@ function countdown()
 	else 
 	 return 1
 	end
+end
+
+function col(a,b)
+ local a_left=a.x
+ local a_right=a.x+7
+ local a_top=a.y
+ local a_bottom=a.y+7
+ 
+ local b_left=b.x
+ local b_right=b.x+7
+ local b_top=b.y
+ local b_bottom=b.y+7
+ 
+ if (a_left)>b_right return false
+ if (b_left)>a_right return false
+ if (a_top)>b_bottom return false
+ if (b_top)>a_bottom return false
+ 
+	return true
 end
 -->8
 function drawspr(myspr)
@@ -213,10 +224,6 @@ function update_game()
   end
  end
  
- if btnp(4) and btnp(5) then
-  mode="over"
- end
- 
  ship.x += ship.spdx
  ship.y += ship.spdy
  
@@ -264,9 +271,34 @@ function update_game()
 	  e.x = rnd(128)
 	 end
 	end
+	
+	-- collision ship x enemies
+	for e in all(enemies) do
+		if col(e, ship) then
+		 lives -= 1
+			sfx(2)
+			del(enemies,e)
+		end
+	end
+	
+	if lives<=0 then
+	 mode="over"
+	 return
+	end
 
 	animatestars()
 	animatebullets()
+	
+	-- collision bullets x enemies
+	for b in all(bullets) do
+		for e in all(enemies) do
+		 if col(b,e) then
+		 	sfx(3)
+		 	del(enemies,e)
+		 	del(bullets,b)
+   end
+		end
+	end
 	
 end
 
@@ -392,3 +424,5 @@ __gfx__
 __sfx__
 00010000330503305009050080502e05029050240501c05015050100500e0500a0500605002050000500000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0001000016450174500b350194501c4501e4501435020450234501735025450183502745018350284501635029450294502945027450274502745026450244501f4201a410136100c65008650026500165000650
+000400003b6503a6503965034650326502e6502a650246501e650186400a6400c64007630036200062002620006100b6000460001600006000000000000000000000000000000000000000000000000000000000
+0001000001650076500c65013650176501c650216502365027650296502c6502f65031650336503565037650386503b6503d6503e6503f64000530005203d600396003a6003f6000000000000000000000000000
