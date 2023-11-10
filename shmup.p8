@@ -6,6 +6,7 @@ function _init()
  mode="start"
  blinkt=1
  countdownt=90
+ t=0
  
  stars={}
  
@@ -20,6 +21,7 @@ function _init()
 end
 
 function _update()
+ t+=1
  blinkt +=1
  countdownt -=1
 
@@ -53,6 +55,7 @@ end
 
 function startgame()
  mode="game"
+ t=0
  
  ship={}
 	ship.x = 60
@@ -60,7 +63,7 @@ function startgame()
  ship.xspd = 0
  ship.yspd = 0
  ship.spr = 17
- ship.inv = false
+ ship.inv = 0
  
  bulletspd = -4
  bullets={}
@@ -273,38 +276,37 @@ function update_game()
 	 end
 	end
 	
-	-- collision ship x enemies
-	for e in all(enemies) do
-		if ship.inv!=true and col(e, ship) then
-		 lives -= 1
-			sfx(2)
-			ship.inv=true
-		end
-	end
-	
-	if lives<=0 then
-	 mode="over"
-	 return
-	end
-	
-	if ship.inv==true then
-		--do something then
-		--ship.inv=false
-	end
-
-	animatestars()
-	animatebullets()
-	
 	-- collision bullets x enemies
-	for b in all(bullets) do
-		for e in all(enemies) do
-		 if col(b,e) then
+	for e in all(enemies) do
+		for b in all(bullets) do
+		 if col(e,b) then
 		 	sfx(3)
 		 	del(enemies,e)
 		 	del(bullets,b)
    end
 		end
 	end
+	
+	-- collision ship x enemies
+	if ship.inv<=0 then
+		for e in all(enemies) do
+			if col(e, ship) then
+			 lives -= 1
+				sfx(2)
+				ship.inv=60
+			end
+		end
+		else
+		 ship.inv-=1
+	end
+	
+	if lives<=0 then
+	 mode="over"
+	 return
+	end
+
+	animatestars()
+	animatebullets()
 	
 end
 
@@ -338,8 +340,15 @@ function draw_game()
  
  print(#bullets,0,110)
  
- spr(ship.spr,ship.x,ship.y) -- ship
- spr(flamespr,ship.x,ship.y+5) -- flame
+ if ship.inv<=0 then
+ 	drawspr(ship)
+ 	spr(flamespr,ship.x,ship.y+5) -- flame
+ else
+  if sin(t/3)<0 then
+	 	drawspr(ship)
+	 	spr(flamespr,ship.x,ship.y+5)
+ 	end
+ end
  
  if muzzle > 0 then 
   circfill(ship.x+3,ship.y-2,muzzle,7)
