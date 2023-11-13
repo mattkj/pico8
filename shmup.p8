@@ -1,6 +1,9 @@
 pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
+--todo
+-- explosions
+
 function _init()
  cls(0)
  mode="start"
@@ -67,10 +70,11 @@ function startgame()
  
  bulletspd = -4
  bullets={}
+ bullettimer=0
  
  flamespr = 19
  muzzle = 0
- score = 10000
+ score = 0
  lives = 3
  bombs = 2
  bombsize = 0
@@ -78,19 +82,7 @@ function startgame()
  enemies={}
  
  for i=1,5 do
- 	local enemy={}
-  enemy.x=flr(rnd(128))
-  enemy.y=flr(rnd(128)*-1)
-  enemy.yspd=rnd(1.5)+.5
-  enemy.xspd=rnd(2)-1
-  enemy.type=flr(rnd(2)+1)
-  if enemy.type == 1 then
-   enemy.spr=24
-  elseif enemy.type==2 then
-   enemy.spr=40
-  end
- 
-  add(enemies,enemy)
+ 	spawnen()
  end
  
 end
@@ -164,6 +156,22 @@ function col(a,b)
  
 	return true
 end
+
+function spawnen()
+	local enemy={}
+  enemy.x=flr(rnd(128))
+  enemy.y=flr(rnd(128)*-1)
+  enemy.yspd=rnd(1.5)+.5
+  enemy.xspd=rnd(2)-1
+  enemy.type=flr(rnd(2)+1)
+  if enemy.type == 1 then
+   enemy.spr=24
+  elseif enemy.type==2 then
+   enemy.spr=40
+  end
+ 
+  add(enemies,enemy)
+end
 -->8
 function drawspr(myspr)
 	 spr(myspr.spr,myspr.x,myspr.y)
@@ -209,16 +217,21 @@ function update_game()
   ship.spdy = 2
  end
  
- if btnp(4) then
-  local bullet={}
-  bullet.x=ship.x
-  bullet.y=ship.y-4
-  bullet.spr=3
-  add(bullets,bullet)
-
-  sfx(0)
-  muzzle = 3
+ if btn(4) then
+  if bullettimer<=0 then
+	  local bullet={}
+	  bullet.x=ship.x
+	  bullet.y=ship.y-4
+	  bullet.spr=3
+	  add(bullets,bullet)
+	
+	  sfx(0)
+	  muzzle = 3
+	  bullettimer=4
+  end
  end
+ 
+ bullettimer -= 1
  
  if btnp(5) then
   if bombs > 0 then
@@ -283,6 +296,8 @@ function update_game()
 		 	sfx(3)
 		 	del(enemies,e)
 		 	del(bullets,b)
+		 	score+=1
+		 	spawnen()
    end
 		end
 	end
@@ -340,6 +355,7 @@ function draw_game()
  
  print(#bullets,0,110)
  
+ -- draw ship
  if ship.inv<=0 then
  	drawspr(ship)
  	spr(flamespr,ship.x,ship.y+5) -- flame
