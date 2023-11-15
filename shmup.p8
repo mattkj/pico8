@@ -164,6 +164,7 @@ function spawnen()
   enemy.yspd=rnd(1.5)+.5
   enemy.xspd=rnd(2)-1
   enemy.hp=5
+  enemy.flash=0
   enemy.type=flr(rnd(2)+1)
   if enemy.type == 1 then
    enemy.spr=24
@@ -294,13 +295,13 @@ function update_game()
 	for e in all(enemies) do
 		for b in all(bullets) do
 		 if col(e,b) then
-		  if e.hp>0 then
+		 		del(bullets,b)
 		   e.hp-=1
 		   sfx(4)
-		  else
+		   e.flash=2
+		  if e.hp<=0 then
 			 	sfx(3)
 			 	del(enemies,e)
-			 	del(bullets,b)
 			 	score+=1
 			 	spawnen()
 		 	end
@@ -403,7 +404,16 @@ function draw_game()
  end
  
  --draw enemies
- foreach(enemies,drawspr)
+ for e in all(enemies) do
+  if e.flash>0 then
+   e.flash-=1
+   for i=1,15 do
+    pal(i,7)
+   end
+  end
+ 	drawspr(e)
+ 	pal()
+ end
  
  --draw bullets
  foreach(bullets,drawspr)
