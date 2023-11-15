@@ -2,7 +2,6 @@ pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
 --todo
--- bullet explodes on hit
 
 function _init()
  cls(0)
@@ -71,6 +70,7 @@ function startgame()
  bulletspd = -4
  bullets={}
  bullettimer=0
+ bullexps={} --explosions
  
  flamespr = 19
  muzzle = 0
@@ -183,6 +183,14 @@ function explode(x,y)
 	e.y=y
 	e.age=1
 	add(explosions,e)
+end
+
+function bullexp(x,y)
+	local e={}
+	e.x=x
+	e.y=y
+	e.size=3
+	add(bullexps,e)
 end
 -->8
 function drawspr(myspr)
@@ -306,6 +314,7 @@ function update_game()
 		for b in all(bullets) do
 		 if col(e,b) then
 		 		del(bullets,b)
+		 		bullexp(b.x,b.y)
 		   e.hp-=1
 		   sfx(4)
 		   e.flash=2
@@ -449,6 +458,14 @@ function draw_game()
  
  --draw bullets
  foreach(bullets,drawspr)
+ 
+ --draw bull explosions
+ for b in all(bullexps) do
+ 	if b.size>0 then
+ 		circfill(b.x+3,b.y,b.size,7)
+ 		b.size-=1
+		end
+ end
  
 end
 
