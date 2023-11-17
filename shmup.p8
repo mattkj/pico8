@@ -80,7 +80,8 @@ function startgame()
  bombsize = 0
  
  enemies={}
- explosions={}
+-- explosions={}
+ particles={}
  
  for i=1,5 do
  	spawnen()
@@ -178,11 +179,21 @@ function spawnen()
 end
 
 function explode(x,y)
-	local e={}
-	e.x=x
-	e.y=y
-	e.age=1
-	add(explosions,e)
+--	local e={}
+--	e.x=x
+--	e.y=y
+--	e.age=1
+--	add(explosions,e)
+ for i=1,20 do
+	 local p={}
+	 p.x=x
+	 p.y=y
+	 p.xspd=(rnd()-0.5)*3
+	 p.yspd=(rnd()-0.5)*3
+	 p.age=1
+	 p.maxage=20+rnd(20)
+	 add(particles,p)
+ end
 end
 
 function bullexp(x,y)
@@ -424,14 +435,25 @@ function draw_game()
  end
  
  --draw explosions
- local espr={64,64,66,68,70,70,72,72}
- for e in all(explosions) do
-  spr(espr[e.age],e.x-4,e.y-4,2,2)
-  e.age+=1
-  if e.age>#espr then
-   del(explosions,e)
-  end
- end
+-- local espr={64,64,66,68,70,70,72,72}
+-- for e in all(explosions) do
+--  spr(espr[e.age],e.x-4,e.y-4,2,2)
+--  e.age+=1
+--  if e.age>#espr then
+--   del(explosions,e)
+--  end
+-- end
+
+	--draw particles
+	for p in all(particles) do
+		pset(p.x,p.y,7)
+		p.x+=p.xspd
+		p.y+=p.yspd+1
+		p.age+=1
+		if p.age>p.maxage then
+			del(particles,p)
+		end
+	end
  
  --draw enemies
  for e in all(enemies) do
