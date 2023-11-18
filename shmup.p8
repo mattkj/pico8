@@ -80,7 +80,7 @@ function startgame()
  bombsize = 0
  
  enemies={}
--- explosions={}
+ explosions={}
  particles={}
  
  for i=1,5 do
@@ -178,20 +178,36 @@ function spawnen()
   add(enemies,enemy)
 end
 
-function explode(x,y)
---	local e={}
---	e.x=x
---	e.y=y
---	e.age=1
---	add(explosions,e)
+function ship_explode(x,y)
+	local e={}
+	e.x=x
+	e.y=y
+	e.age=1
+	add(explosions,e)
+end
+
+function enemy_explode(x,y)
+	local p={}
+ p.x=x
+ p.y=y
+ p.xspd=0
+ p.yspd=0
+ p.age=0
+ p.maxage=0
+ p.clr=7
+ p.sz=8
+ add(particles,p)
+	 
  for i=1,20 do
 	 local p={}
 	 p.x=x
 	 p.y=y
-	 p.xspd=(rnd()-0.5)*3
-	 p.yspd=(rnd()-0.5)*3
-	 p.age=1
-	 p.maxage=20+rnd(20)
+	 p.xspd=(rnd()-0.5)*4
+	 p.yspd=(rnd()-0.5)*4
+	 p.age=rnd(2)
+	 p.maxage=10+rnd(10)
+	 p.clr=7
+	 p.sz=1+rnd(4)
 	 add(particles,p)
  end
 end
@@ -334,7 +350,7 @@ function update_game()
 			 	del(enemies,e)
 			 	score+=1
 			 	spawnen()
-			 	explode(e.x,e.y)
+			 	enemy_explode(e.x+4,e.y+4)
 		 	end
    end
 		end
@@ -344,8 +360,9 @@ function update_game()
 	if ship.inv<=0 then
 		for e in all(enemies) do
 			if col(e, ship) then
-			 lives -= 1
 				sfx(2)
+				ship_explode(ship.x,ship.y)
+				lives -= 1
 				ship.inv=60
 			end
 		end
@@ -353,7 +370,7 @@ function update_game()
 		 ship.inv-=1
 	end
 	
-	if lives<=0 then
+	if lives<=0 and #explosions==0 then
 	 mode="over"
 	 return
 	end
@@ -435,23 +452,39 @@ function draw_game()
  end
  
  --draw explosions
--- local espr={64,64,66,68,70,70,72,72}
--- for e in all(explosions) do
---  spr(espr[e.age],e.x-4,e.y-4,2,2)
---  e.age+=1
---  if e.age>#espr then
---   del(explosions,e)
---  end
--- end
+ local espr={64,64,66,68,70,70,72,72}
+ for e in all(explosions) do
+  spr(espr[e.age],e.x-4,e.y-4,2,2)
+  e.age+=1
+  if e.age>#espr then
+   del(explosions,e)
+  end
+ end
 
 	--draw particles
 	for p in all(particles) do
-		pset(p.x,p.y,7)
+		circfill(p.x,p.y,p.sz,p.clr)
+		pset(p.x+rnd(2),p.y+rnd(2),7)
+  
 		p.x+=p.xspd
 		p.y+=p.yspd+1
+		
+		p.xspd=p.xspd*0.9
+		p.yspd=p.yspd*0.9
+		
 		p.age+=1
+		
+		if (p.age>5) p.clr=10
+		if (p.age>7) p.clr=9
+		if (p.age>10) p.clr=8
+		if (p.age>12) p.clr=2
+		if (p.age>15) p.clr=5
+		
 		if p.age>p.maxage then
-			del(particles,p)
+		 p.sz-=1
+		 if p.sz<0 then
+				del(particles,p)
+			end
 		end
 	end
  
