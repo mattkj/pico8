@@ -2,6 +2,12 @@ pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
 --todo
+-----------------
+--game flow
+--music
+--multiple enemies
+--big enemies
+--enemy bullets
 
 function _init()
  cls(0)
@@ -185,6 +191,24 @@ function ship_explode(x,y)
 	e.y=y
 	e.age=1
 	add(explosions,e)
+	
+	swave(x,y+4,30,7,3.5)
+	
+	--sparks
+ for i=1,20 do
+	 local p={}
+	 p.x=x
+	 p.y=y
+	 p.xspd=(rnd()-0.5)*8
+	 p.yspd=(rnd()-0.5)*8
+	 p.age=rnd(2)
+	 p.maxage=10+rnd(10)
+	 p.clr=7
+	 p.sz=1+rnd(4)
+	 p.spark=true
+	 add(particles,p)
+ end
+	
 end
 
 function enemy_explode(x,y)
@@ -212,6 +236,21 @@ function enemy_explode(x,y)
 	 add(particles,p)
  end
  
+ --sparks
+ for i=1,20 do
+	 local p={}
+	 p.x=x
+	 p.y=y
+	 p.xspd=(rnd()-0.5)*8
+	 p.yspd=(rnd()-0.5)*8
+	 p.age=rnd(2)
+	 p.maxage=10+rnd(10)
+	 p.clr=7
+	 p.sz=1+rnd(4)
+	 p.spark=true
+	 add(particles,p)
+ end
+ 
  swave(x,y+4,30,7,3.5)
 end
 
@@ -232,6 +271,20 @@ function swave(x,y,tr,clr,spd)
 	sw.clr=clr --9
 	sw.spd=spd --1
 	add(swaves,sw)
+end
+
+function hit_sparks(x,y)
+ local p={}
+ p.x=x
+ p.y=y
+ p.xspd=(rnd()-0.5)*4
+ p.yspd=(rnd()-1)*4
+ p.age=rnd(2)
+ p.maxage=10+rnd(10)
+ p.clr=7
+ p.sz=1+rnd(4)
+ p.spark=true
+ add(particles,p)
 end
 -->8
 function drawspr(myspr)
@@ -357,6 +410,7 @@ function update_game()
 		 		del(bullets,b)
 		 		swave(b.x+4,b.y+4,6,9,1)
 		 		bullexp(b.x,b.y)
+		 		hit_sparks(e.x+4,e.y+4)
 		   e.hp-=1
 		   sfx(4)
 		   e.flash=2
@@ -487,8 +541,12 @@ function draw_game()
 
 	--draw particles
 	for p in all(particles) do
-		circfill(p.x,p.y,p.sz,p.clr)
-		pset(p.x+rnd(2),p.y+rnd(2),7)
+	
+		if p.spark then
+		 pset(p.x,p.y,7)
+		else
+		 circfill(p.x,p.y,p.sz,p.clr)
+  end
   
 		p.x+=p.xspd
 		p.y+=p.yspd+1
