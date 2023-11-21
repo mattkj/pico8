@@ -82,6 +82,7 @@ function startgame()
  enemies={}
  explosions={}
  particles={}
+ swaves={}
  
  for i=1,5 do
  	spawnen()
@@ -210,6 +211,8 @@ function enemy_explode(x,y)
 	 p.sz=1+rnd(4)
 	 add(particles,p)
  end
+ 
+ swave(x,y+4,30,7,3.5)
 end
 
 function bullexp(x,y)
@@ -218,6 +221,17 @@ function bullexp(x,y)
 	e.y=y
 	e.size=3
 	add(bullexps,e)
+end
+
+function swave(x,y,tr,clr,spd)
+	local sw={}
+	sw.x=x
+	sw.y=y
+	sw.r=3
+	sw.tr=tr --6
+	sw.clr=clr --9
+	sw.spd=spd --1
+	add(swaves,sw)
 end
 -->8
 function drawspr(myspr)
@@ -341,6 +355,7 @@ function update_game()
 		for b in all(bullets) do
 		 if col(e,b) then
 		 		del(bullets,b)
+		 		swave(b.x+4,b.y+4,6,9,1)
 		 		bullexp(b.x,b.y)
 		   e.hp-=1
 		   sfx(4)
@@ -450,6 +465,15 @@ function draw_game()
    spr(15,i*7+106,1)
   end
  end
+ 
+ --draw swaves
+	for sw in all(swaves) do
+		circ(sw.x,sw.y,sw.r,sw.clr)
+		sw.r+=sw.spd
+		if sw.r>sw.tr then
+			del(swaves,sw)
+		end
+	end
  
  --draw explosions
  local espr={64,64,66,68,70,70,72,72}
