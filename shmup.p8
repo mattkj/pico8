@@ -13,7 +13,6 @@ function _init()
  cls(0)
  mode="start"
  blinkt=1
- countdownt=90
  t=0
  
  stars={}
@@ -31,16 +30,17 @@ end
 function _update()
  t+=1
  blinkt +=1
- countdownt -=1
 
  if mode=="game" then
   update_game()
  elseif mode=="start" then
   update_start()
- elseif mode=="level" then
-  update_level()
+ elseif mode=="wave" then
+  update_wave()
  elseif mode=="over" then
   update_over()
+ elseif mode=="win" then
+  update_win()
  end
 end
 
@@ -49,21 +49,19 @@ function _draw()
   draw_game()
  elseif mode=="start" then
   draw_start()
- elseif mode=="level" then
-  draw_level()
+ elseif mode=="wave" then
+  draw_wave()
  elseif mode=="over" then
   draw_over()
+ elseif mode=="win" then
+  draw_win()
  end
 end
 
-function startlevel()
-	countdownt=90
-	mode="level"
-end
-
 function startgame()
- mode="game"
  t=0
+ wave=0
+ nextwave()
  
  ship={}
 	ship.x = 60
@@ -89,11 +87,6 @@ function startgame()
  explosions={}
  particles={}
  swaves={}
- 
- for i=1,5 do
- 	spawnen()
- end
- 
 end
 
 -->8
@@ -164,25 +157,6 @@ function col(a,b)
  if (b_top)>a_bottom return false
  
 	return true
-end
-
-function spawnen()
-	local enemy={}
-  enemy.x=flr(rnd(128))
-  enemy.y=flr(rnd(128)*-1)
-  enemy.yspd=rnd(1.5)+.5
-  enemy.xspd=rnd(2)-1
-  enemy.hp=5
-  enemy.flash=0
-  enemy.type=flr(rnd(2)+1)
-  enemy.pal=flr(rnd(2)+1)
-  if enemy.type == 1 then
-   enemy.spr=24
-  elseif enemy.type==2 then
-   enemy.spr=40
-  end
- 
-  add(enemies,enemy)
 end
 
 function ship_explode(x,y)
@@ -414,12 +388,16 @@ function update_game()
 		   e.hp-=1
 		   sfx(4)
 		   e.flash=2
+		  
 		  if e.hp<=0 then
 			 	sfx(3)
 			 	del(enemies,e)
 			 	score+=1
-			 	spawnen()
 			 	enemy_explode(e.x+4,e.y+4)
+		 	 
+		 	 if #enemies==0 then
+		 	  nextwave()
+		 	 end 
 		 	end
    end
 		end
@@ -452,25 +430,56 @@ end
 function update_start()
  animatestars()
  
- if btnp(4) or btnp(5) then
- 	startlevel()
- end
+ if btn(4)==false and btn(5)==false then
+		btnreleased=true
+	end
+	
+	if btnreleased then
+		if btnp(4) or btnp(5) then
+ 		startgame()
+ 		btnreleased=false
+ 	end
+	end
 end
 
-function update_level()
- animatestars()
- 
- if countdownt==0 then
- 	startgame()
+function update_wave()
+ update_game()
+ countdownt-=1
+ if countdownt<=0 then
+ 	mode="game"
+ 	spawnwave()
  end
 end
 
 function update_over()
  animatestars()
 
- if btnp(4) or btnp(5) then
- 	mode="start"
- end
+ if btn(4)==false and btn(5)==false then
+		btnreleased=true
+	end
+	
+	if btnreleased then
+		if btnp(4) or btnp(5) then
+ 		mode="start"
+ 		btnreleased=false
+ 	end
+	end
+end
+
+function update_win()
+ animatestars()
+
+	if btn(4)==false and btn(5)==false then
+		btnreleased=true
+	end
+	
+	if btnreleased then
+		if btnp(4) or btnp(5) then
+ 		mode="start"
+ 		btnreleased=false
+ 	end
+	end
+ 
 end
 -->8
 function draw_game()
@@ -614,11 +623,10 @@ function draw_start()
  print("press any button to start",15,80,blink())
 end
 
-function draw_level()
- cls(0)
- starfield()
+function draw_wave()
+ draw_game()
  
- print("level 1",50,40,7)
+ print("wave "..wave,50,40,7)
  print(countdown(),64,70,7)
 end
 
@@ -628,6 +636,49 @@ function draw_over()
  
  print("game over",42,40,12)
  print("press any button to continue",10,80,blink())
+end
+
+function draw_win()
+ cls(11)
+ starfield()
+
+ print("congratulations",30,40,12)
+ print("press any button to continue",10,80,blink())
+end
+-->8
+-- waves and enemies
+
+function spawnwave()
+	spawnen()
+end
+
+function nextwave()
+	wave+=1
+	if wave>4 then
+		mode="win"
+	else
+		mode="wave"
+		countdownt=90
+	end
+end
+
+function spawnen()
+	local enemy={}
+  enemy.x=flr(rnd(128))
+  enemy.y=flr(rnd(128)*-1)
+  enemy.yspd=rnd(1.5)+.5
+  enemy.xspd=rnd(2)-1
+  enemy.hp=5
+  enemy.flash=0
+  enemy.type=flr(rnd(2)+1)
+  enemy.pal=flr(rnd(2)+1)
+  if enemy.type == 1 then
+   enemy.spr=24
+  elseif enemy.type==2 then
+   enemy.spr=40
+  end
+ 
+  add(enemies,enemy)
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
