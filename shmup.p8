@@ -660,6 +660,7 @@ end
 function spawnwave()
  if wave==4 then
  	spawnen(1) --boss
+ 	music(1)
  	else spawnen(wave)
  end
 end
