@@ -83,7 +83,7 @@ function startgame()
  flamespr = 19
  muzzle = 0
  score = 0
- lives = 3
+ lives = 1
  bombs = 2
  bombsize = 0
  
@@ -365,15 +365,13 @@ function update_game()
  for e in all(enemies) do
   e.y+=e.yspd
 	 e.x+=e.xspd
-	 e.spr+=.2
+	 e.aniframe+=.2
 	 
-	 if e.type==1 and e.spr>=28 then
-	   e.spr = 24
+	 if flr(e.aniframe)>#e.ani then
+	  e.aniframe=1
   end
   
-  if e.type==2 and e.spr>=43 then
-	   e.spr = 40
-  end
+  e.spr=e.ani[flr(e.aniframe)]
 	 
 	 if e.y > 128 then
 	  e.y = 0
@@ -496,14 +494,16 @@ function draw_game()
 -- print(#bullets,0,110)
  
  -- draw ship
- if ship.inv<=0 then
- 	drawspr(ship)
- 	spr(flamespr,ship.x,ship.y+5) -- flame
- else
-  if sin(t/3)<0 then
+ if lives>0 then
+	 if ship.inv<=0 then
 	 	drawspr(ship)
-	 	spr(flamespr,ship.x,ship.y+5)
- 	end
+	 	spr(flamespr,ship.x,ship.y+5) -- flame
+	 else
+	  if sin(t/3)<0 then
+		 	drawspr(ship)
+		 	spr(flamespr,ship.x,ship.y+5)
+	 	end
+	 end
  end
  
  if muzzle > 0 then 
@@ -638,17 +638,13 @@ function draw_wave()
 end
 
 function draw_over()
- cls(8)
- starfield()
- 
- print("game over",42,40,12)
+ draw_game()
+ print("game over",42,40,8)
  print("press any button to continue",10,80,blink())
 end
 
 function draw_win()
- cls(11)
- starfield()
-
+ draw_game()
  print("congratulations",30,40,12)
  print("press any button to continue",10,80,blink())
 end
@@ -656,7 +652,7 @@ end
 -- waves and enemies
 
 function spawnwave()
-	spawnen()
+	spawnen(wave)
 end
 
 function nextwave()
@@ -670,8 +666,9 @@ function nextwave()
 	end
 end
 
-function spawnen()
-	local enemy={}
+function spawnen(num)
+ for i=1,num do
+ 	local enemy={}
   enemy.x=flr(rnd(128))
   enemy.y=flr(rnd(128)*-1)
   enemy.yspd=rnd(1.5)+.5
@@ -680,13 +677,19 @@ function spawnen()
   enemy.flash=0
   enemy.type=flr(rnd(2)+1)
   enemy.pal=flr(rnd(2)+1)
-  if enemy.type == 1 then
-   enemy.spr=24
+  enemy.aniframe=1
+  
+  if enemy.type==1 then
+   enemy.ani={24,25,26,27}
   elseif enemy.type==2 then
-   enemy.spr=40
+   enemy.ani={40,41,42}
   end
+  
+  enemy.spr=enemy.ani[flr(enemy.aniframe)]
  
   add(enemies,enemy)
+ end
+	
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
