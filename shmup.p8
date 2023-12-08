@@ -1,12 +1,8 @@
 pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
---todo
+-- todo & init
 -----------------
---game flow
---music
---multiple enemies
---big enemies
 --enemy bullets
 
 function _init()
@@ -96,6 +92,29 @@ function startgame()
 end
 
 -->8
+--helpers
+
+function drawspr(myspr)	 
+	 spr(myspr.spr,myspr.x,myspr.y,myspr.width,myspr.height)
+end
+
+function animatebullets()
+ for i=#bullets,1,-1 do
+  local bullet=bullets[i]
+  bullet.y += bulletspd
+  bullet.spr += 1
+  
+  if bullet.spr > 6 then
+   bullet.spr = 3
+  end
+
+  --clear bullets
+  if bullet.y < -8 then
+   deli(bullets,i)
+  end
+ end
+end
+
 function starfield()
 	for i=1,#stars do
 	 local star=stars[i]
@@ -267,27 +286,64 @@ function hit_sparks(x,y)
  add(particles,p)
 end
 -->8
-function drawspr(myspr)	 
-	 spr(myspr.spr,myspr.x,myspr.y,myspr.width,myspr.height)
-end
+-- waves and enemies
 
-function animatebullets()
- for i=#bullets,1,-1 do
-  local bullet=bullets[i]
-  bullet.y += bulletspd
-  bullet.spr += 1
-  
-  if bullet.spr > 6 then
-   bullet.spr = 3
-  end
-
-  --clear bullets
-  if bullet.y < -8 then
-   deli(bullets,i)
-  end
+function spawnwave()
+ if wave==4 then
+ 	spawnen(1) --boss
+ 	music(1)
+ 	else spawnen(wave)
  end
 end
+
+function nextwave()
+	wave+=1
+	if wave>4 then
+		mode="win"
+		music(2)
+	else
+		mode="wave"
+		countdownt=90
+	end
+end
+
+function spawnen(num)
+ for i=1,num do
+ 	local enemy={}
+  enemy.x=flr(rnd(128))
+  enemy.y=flr(rnd(128)*-1)
+  enemy.yspd=rnd(1.5)+.5
+  enemy.xspd=rnd(2)-1
+  enemy.hp=5
+  enemy.flash=0
+  enemy.type=flr(rnd(2)+1)
+  enemy.pal=flr(rnd(2)+1)
+  enemy.aniframe=1
+  enemy.width=1
+  enemy.height=1
+  
+  if (wave==4) enemy.type=3
+  
+  if enemy.type==1 then
+   enemy.ani={24,25,26,27}
+  elseif enemy.type==2 then
+   enemy.ani={40,41,42}
+  elseif enemy.type==3 then
+   --boss enemy
+   enemy.width=2
+   enemy.height=2
+   enemy.ani={32,34}
+  end
+  
+  enemy.spr=enemy.ani[enemy.aniframe]
+ 
+  add(enemies,enemy)
+ end
+	
+end
 -->8
+-- update
+
 function update_game()
  ship.spdx = 0
  ship.spdy = 0
@@ -491,11 +547,11 @@ function update_win()
  
 end
 -->8
+-- draw
+
 function draw_game()
  cls(0)
  starfield()
- 
--- print(#bullets,0,110)
  
  -- draw ship
  if lives>0 then
@@ -651,62 +707,6 @@ function draw_win()
  draw_game()
  print("congratulations",30,40,12)
  print("press any button to continue",10,80,blink())
-end
--->8
--- waves and enemies
-
-function spawnwave()
- if wave==4 then
- 	spawnen(1) --boss
- 	music(1)
- 	else spawnen(wave)
- end
-end
-
-function nextwave()
-	wave+=1
-	if wave>4 then
-		mode="win"
-		music(2)
-	else
-		mode="wave"
-		countdownt=90
-	end
-end
-
-function spawnen(num)
- for i=1,num do
- 	local enemy={}
-  enemy.x=flr(rnd(128))
-  enemy.y=flr(rnd(128)*-1)
-  enemy.yspd=rnd(1.5)+.5
-  enemy.xspd=rnd(2)-1
-  enemy.hp=5
-  enemy.flash=0
-  enemy.type=flr(rnd(2)+1)
-  enemy.pal=flr(rnd(2)+1)
-  enemy.aniframe=1
-  enemy.width=1
-  enemy.height=1
-  
-  if (wave==4) enemy.type=3
-  
-  if enemy.type==1 then
-   enemy.ani={24,25,26,27}
-  elseif enemy.type==2 then
-   enemy.ani={40,41,42}
-  elseif enemy.type==3 then
-   --boss enemy
-   enemy.width=2
-   enemy.height=2
-   enemy.ani={32,34}
-  end
-  
-  enemy.spr=enemy.ani[enemy.aniframe]
- 
-  add(enemies,enemy)
- end
-	
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
