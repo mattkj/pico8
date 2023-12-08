@@ -74,6 +74,8 @@ function startgame()
  ship.yspd = 0
  ship.spr = 17
  ship.inv = 0
+ ship.width = 1
+ ship.height = 1
  
  bulletspd = -4
  bullets={}
@@ -146,14 +148,14 @@ end
 
 function col(a,b)
  local a_left=a.x
- local a_right=a.x+7
+ local a_right=a.x+(a.width*7)
  local a_top=a.y
- local a_bottom=a.y+7
+ local a_bottom=a.y+(a.height*7)
  
  local b_left=b.x
- local b_right=b.x+7
+ local b_right=b.x+(b.width*7)
  local b_top=b.y
- local b_bottom=b.y+7
+ local b_bottom=b.y+(b.height*7)
  
  if (a_left)>b_right return false
  if (b_left)>a_right return false
@@ -265,14 +267,8 @@ function hit_sparks(x,y)
  add(particles,p)
 end
 -->8
-function drawspr(myspr)
-  local width=myspr.width
-  local height=myspr.height
-  
-  if (width==nil) width=1
-  if (height==nil) height=1
-	 
-	 spr(myspr.spr,myspr.x,myspr.y,width,height)
+function drawspr(myspr)	 
+	 spr(myspr.spr,myspr.x,myspr.y,myspr.width,myspr.height)
 end
 
 function animatebullets()
@@ -321,6 +317,8 @@ function update_game()
 	  bullet.x=ship.x
 	  bullet.y=ship.y-4
 	  bullet.spr=3
+	  bullet.width=1
+	  bullet.height=1
 	  add(bullets,bullet)
 	
 	  sfx(0)
