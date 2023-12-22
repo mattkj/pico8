@@ -64,15 +64,13 @@ function startgame()
  
  music(-1,2000)
  
- ship={}
+ ship=makespr()
 	ship.x = 60
  ship.y = 110
  ship.xspd = 0
  ship.yspd = 0
  ship.spr = 17
  ship.inv = 0
- ship.width = 1
- ship.height = 1
  
  bulletspd = -4
  bullets={}
@@ -168,14 +166,14 @@ end
 
 function col(a,b)
  local a_left=a.x
- local a_right=a.x+(a.width*7)
+ local a_right=a.x+(a.colw-1)
  local a_top=a.y
- local a_bottom=a.y+(a.height*7)
+ local a_bottom=a.y+(a.colh-1)
  
  local b_left=b.x
- local b_right=b.x+(b.width*7)
+ local b_right=b.x+(b.colw-1)
  local b_top=b.y
- local b_bottom=b.y+(b.height*7)
+ local b_bottom=b.y+(b.colh-1)
  
  if (a_left)>b_right return false
  if (b_left)>a_right return false
@@ -286,6 +284,26 @@ function hit_sparks(x,y)
  p.spark=true
  add(particles,p)
 end
+
+function makespr()
+	local myspr={}
+  myspr.x=0
+  myspr.y=0
+  myspr.yspd=1
+  myspr.xspd=1
+  myspr.hp=5
+  myspr.flash=0
+  myspr.type=1
+  myspr.pal=1
+  myspr.aniframe=1
+  myspr.width=1
+  myspr.height=1
+  myspr.spr=0
+  myspr.colw=8
+  myspr.colh=8
+  
+  return myspr
+end
 -->8
 -- waves and enemies
 
@@ -314,18 +332,13 @@ end
 
 function spawnen(num)
  for i=1,num do
- 	local enemy={}
+ 	local enemy=makespr()
   enemy.x=flr(rnd(128))
   enemy.y=flr(rnd(128)*-1)
   enemy.yspd=rnd(1.5)+.5
   enemy.xspd=rnd(2)-1
-  enemy.hp=5
-  enemy.flash=0
   enemy.type=flr(rnd(2)+1)
   enemy.pal=flr(rnd(2)+1)
-  enemy.aniframe=1
-  enemy.width=1
-  enemy.height=1
   
   if (wave==4) enemy.type=3
   
@@ -338,6 +351,8 @@ function spawnen(num)
    enemy.width=2
    enemy.height=2
    enemy.ani={32,34}
+   enemy.colw=16
+   enemy.colh=16
   end
   
   enemy.spr=enemy.ani[enemy.aniframe]
@@ -374,12 +389,10 @@ function update_game()
  
  if btn(4) then
   if bullettimer<=0 then
-	  local bullet={}
+	  local bullet=makespr()
 	  bullet.x=ship.x
 	  bullet.y=ship.y-4
 	  bullet.spr=3
-	  bullet.width=1
-	  bullet.height=1
 	  add(bullets,bullet)
 	
 	  sfx(0)
