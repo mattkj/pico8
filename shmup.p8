@@ -311,7 +311,10 @@ function spawnwave()
  if wave==4 then
  	spawnen(1) --boss
  	music(1)
- 	else spawnen(wave)
+ 	else placen({
+ 		{1,1,1,1,1,1,1,1,1,1},
+ 		{2,2,2,2,2,2,2,2,2,2}
+ 	})
  end
 end
 
@@ -330,35 +333,44 @@ function nextwave()
 	end
 end
 
-function spawnen(num)
- for i=1,num do
- 	local enemy=makespr()
-  enemy.x=flr(rnd(128))
-  enemy.y=flr(rnd(128)*-1)
-  enemy.yspd=rnd(1.5)+.5
-  enemy.xspd=rnd(2)-1
-  enemy.type=flr(rnd(2)+1)
-  enemy.pal=flr(rnd(2)+1)
-  
-  if (wave==4) enemy.type=3
-  
-  if enemy.type==1 then
-   enemy.ani={24,25,26,27}
-  elseif enemy.type==2 then
-   enemy.ani={40,41,42}
-  elseif enemy.type==3 then
-   --boss enemy
-   enemy.width=2
-   enemy.height=2
-   enemy.ani={32,34}
-   enemy.colw=16
-   enemy.colh=16
-  end
-  
-  enemy.spr=enemy.ani[enemy.aniframe]
+function placen(lvl)
+	for j=1,#lvl do
+	 local myline=lvl[j]
+	  for i=1,#myline do
+		  spawnen(myline[i],i*12-6,6+j*12)
+	  end
+	end
+end
+
+function spawnen(entype,x,y)
  
-  add(enemies,enemy)
+	local enemy=makespr()
+ enemy.x=x
+ enemy.y=y
+ enemy.yspd=rnd(1.5)+.5
+ enemy.xspd=rnd(2)-1
+ enemy.type=entype
+ enemy.pal=flr(rnd(2)+1)
+ enemy.hp=3
+ 
+ if (wave==4) enemy.type=3
+ 
+ if enemy.type==1 then
+  enemy.ani={24,25,26,27}
+ elseif enemy.type==2 then
+  enemy.ani={40,41,42}
+ elseif enemy.type==3 then
+  --boss enemy
+  enemy.width=2
+  enemy.height=2
+  enemy.ani={32,34}
+  enemy.colw=16
+  enemy.colh=16
  end
+ 
+ enemy.spr=enemy.ani[enemy.aniframe]
+
+ add(enemies,enemy)
 	
 end
 -->8
@@ -441,8 +453,8 @@ function update_game()
  
  --move enemies
  for e in all(enemies) do
-  e.y+=e.yspd
-	 e.x+=e.xspd
+--  e.y+=e.yspd
+--	 e.x+=e.xspd
 	 e.aniframe+=.2
 	 
 	 if flr(e.aniframe)>#e.ani then
