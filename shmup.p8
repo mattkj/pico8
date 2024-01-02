@@ -294,7 +294,6 @@ function makespr()
   myspr.hp=5
   myspr.flash=0
   myspr.type=1
-  myspr.pal=1
   myspr.aniframe=1
   myspr.width=1
   myspr.height=1
@@ -309,11 +308,13 @@ end
 
 function spawnwave()
  if wave==4 then
- 	spawnen(1) --boss
+ 	spawnen(5,64,16) --boss
  	music(1)
  	else placen({
  		{1,1,1,1,1,1,1,1,1,1},
- 		{2,2,2,2,2,2,2,2,2,2}
+ 		{3,3,3,3,3,3,3,3,3,3},
+ 		{2,2,2,2,2,2,2,2,2,2},
+ 		{4,4,4,4,4,4,4,4,4,4}
  	})
  end
 end
@@ -350,16 +351,15 @@ function spawnen(entype,x,y)
  enemy.yspd=rnd(1.5)+.5
  enemy.xspd=rnd(2)-1
  enemy.type=entype
- enemy.pal=flr(rnd(2)+1)
  enemy.hp=3
  
- if (wave==4) enemy.type=3
+ if (wave==4) enemy.type=5
  
- if enemy.type==1 then
+ if enemy.type==1 or enemy.type==2 then
   enemy.ani={24,25,26,27}
- elseif enemy.type==2 then
+ elseif enemy.type==3 or enemy.type==4 then
   enemy.ani={40,41,42}
- elseif enemy.type==3 then
+ elseif enemy.type==5 then
   --boss enemy
   enemy.width=2
   enemy.height=2
@@ -687,16 +687,12 @@ function draw_game()
  
  --draw enemies
  for e in all(enemies) do
-  if e.type==1 then
-  	if e.pal==2 then
-  		pal(3,12)
-			end
-  end
   if e.type==2 then
-  	if e.pal==2 then
-  		pal(14,2)
-  		pal(15,13)
-			end
+  	pal(3,12)
+  end
+  if e.type==4 then
+  	pal(14,2)
+  	pal(15,13)
   end
   if e.flash>0 then
    e.flash-=1
