@@ -307,15 +307,35 @@ end
 -- waves and enemies
 
 function spawnwave()
- if wave==4 then
- 	spawnen(5,64,16) --boss
- 	music(1)
- 	else placen({
+ if wave==1 then
+ 	placen({
  		{1,1,1,1,1,1,1,1,1,1},
  		{3,3,3,3,3,3,3,3,3,3},
  		{2,2,2,2,2,2,2,2,2,2},
  		{4,4,4,4,4,4,4,4,4,4}
  	})
+ elseif wave==2 then
+  placen({
+ 		{1,1,1,1,1,1,1,1,1,1},
+ 		{3,3,3,3,3,3,3,3,3,3},
+ 		{2,2,2,2,2,2,2,2,2,2},
+ 		{4,4,4,4,4,4,4,4,4,4}
+ 	})
+ elseif wave==3 then
+  placen({
+ 		{1,1,1,1,1,1,1,1,1,1},
+ 		{3,3,3,3,3,3,3,3,3,3},
+ 		{2,2,2,2,2,2,2,2,2,2},
+ 		{4,4,4,4,4,4,4,4,4,4}
+ 	})
+ elseif wave==4 then
+  placen({
+ 		{0,0,0,0,0,0,0,0,0,0},
+ 		{0,0,0,0,5,0,0,0,0,0},
+ 		{0,0,0,0,0,0,0,0,0,0},
+ 		{0,0,0,0,0,0,0,0,0,0}
+ 	})
+ 	music(1)
  end
 end
 
@@ -338,7 +358,9 @@ function placen(lvl)
 	for j=1,#lvl do
 	 local myline=lvl[j]
 	  for i=1,#myline do
-		  spawnen(myline[i],i*12-6,6+j*12)
+	   if myline[i] !=0 then
+		  	spawnen(myline[i],i*12-6,6+j*12)
+	  	end
 	  end
 	end
 end
@@ -351,7 +373,7 @@ function spawnen(entype,x,y)
  enemy.yspd=rnd(1.5)+.5
  enemy.xspd=rnd(2)-1
  enemy.type=entype
- enemy.hp=3
+ enemy.hp=1
  
  if (wave==4) enemy.type=5
  
