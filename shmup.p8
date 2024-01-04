@@ -309,17 +309,17 @@ end
 function spawnwave()
  if wave==1 then
  	placen({
- 		{1,1,1,1,1,1,1,1,1,1},
- 		{3,3,3,3,3,3,3,3,3,3},
- 		{2,2,2,2,2,2,2,2,2,2},
- 		{4,4,4,4,4,4,4,4,4,4}
+ 		{0,1,1,1,1,1,1,1,1,0},
+ 		{0,0,3,3,3,3,3,3,0,0},
+ 		{0,0,0,2,2,2,2,0,0,0},
+ 		{0,0,0,0,4,4,0,0,0,0}
  	})
  elseif wave==2 then
   placen({
- 		{1,1,1,1,1,1,1,1,1,1},
- 		{3,3,3,3,3,3,3,3,3,3},
- 		{2,2,2,2,2,2,2,2,2,2},
- 		{4,4,4,4,4,4,4,4,4,4}
+ 		{1,0,1,0,1,0,1,0,1,0},
+ 		{0,3,0,3,0,3,0,3,0,3},
+ 		{2,0,2,0,2,0,2,0,2,0},
+ 		{0,4,0,4,0,4,0,4,0,4}
  	})
  elseif wave==3 then
   placen({
@@ -369,11 +369,15 @@ function spawnen(entype,x,y)
  
 	local enemy=makespr()
  enemy.x=x
- enemy.y=y
- enemy.yspd=rnd(1.5)+.5
+ enemy.y=y-rnd(32)-64
+ 
+ enemy.xpos=x
+ enemy.ypos=y
+ enemy.yspd=rnd(1.5)+1
  enemy.xspd=rnd(2)-1
  enemy.type=entype
  enemy.hp=1
+ enemy.mission="flyin"
  
  if (wave==4) enemy.type=5
  
@@ -475,8 +479,8 @@ function update_game()
  
  --move enemies
  for e in all(enemies) do
---  e.y+=e.yspd
---	 e.x+=e.xspd
+  doenemy(e)
+  
 	 e.aniframe+=.2
 	 
 	 if flr(e.aniframe)>#e.ani then
@@ -764,6 +768,21 @@ function draw_win()
  draw_game()
  print("congratulations",30,40,12)
  print("press any button to continue",10,80,blink())
+end
+-->8
+--enemy behavior
+
+function doenemy(e)
+	if e.mission=="flyin" then
+		e.y+=e.yspd
+		if e.y>=e.ypos then
+			e.mission="protect"
+		end
+	elseif e.mission=="protect" then
+		
+	elseif e.mission=="attack" then
+		
+	end
 end
 __gfx__
 0000000000000000000000000000000000000000000000000000000000000000000000007000007000000000000000000880088001100110000dd00000011000
